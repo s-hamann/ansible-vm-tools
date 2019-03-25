@@ -1,0 +1,21 @@
+---
+- name: 'gather os specific variables'
+  include_vars: '{{ item }}'
+  with_first_found:
+    - "{{ ansible_facts['distribution'] }}-{{ ansible_facts['distribution_major_version']}}.yml"
+    - "{{ ansible_facts['distribution'] }}.yml"
+    - "{{ ansible_facts['os_family'] }}.yml"
+    - 'default.yml'
+
+- name: 'install QEMU Guest Agent'
+  package:
+    name: '{{ vm_tools_qemu_package }}'
+    state: present
+  when: "ansible_facts['virtualization_type'] == 'kvm'"
+
+- name: 'enable and start QEMU Guest Agent'
+  service:
+    name: '{{ vm_tools_qemu_service }}'
+    enabled: yes
+    state: "{{ ansible_facts['is_chroot'] | ternary(omit, 'started') }}"
+  when: "ansible_facts['virtualization_type'] == 'kvm'"
