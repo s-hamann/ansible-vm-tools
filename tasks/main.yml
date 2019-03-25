@@ -19,3 +19,16 @@
     enabled: yes
     state: "{{ ansible_facts['is_chroot'] | ternary(omit, 'started') }}"
   when: "ansible_facts['virtualization_type'] == 'kvm'"
+
+- name: 'install VMware client tools'
+  package:
+    name: "{{ vm_tools_vmware_package }}"
+    state: present
+  when: "ansible_facts['virtualization_type'] == 'vmware'"
+
+- name: 'enable and start VMware client tools'
+  service:
+    name: "{{ vm_tools_vmware_service }}"
+    enabled: true
+    state: "{{ ansible_facts['is_chroot'] | ternary(omit, 'started') }}"
+  when: "ansible_facts['virtualization_type'] == 'vmware'"

@@ -1,2 +1,4 @@
 vm_tools_qemu_package: qemu-guest-agent
 vm_tools_qemu_service: qemu-guest-agent
+vm_tools_vmware_package: open-vm-tools
+vm_tools_vmware_service: vmtoolsd
