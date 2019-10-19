@@ -7,28 +7,34 @@
     - "{{ ansible_facts['os_family'] }}.yml"
     - 'default.yml'
 
-- name: 'install QEMU Guest Agent'
-  package:
-    name: '{{ vm_tools_qemu_package }}'
-    state: present
+- name: 'set up QEMU Guest Agent'
+  block:
+
+  - name: 'install QEMU Guest Agent'
+    package:
+      name: '{{ vm_tools_qemu_package }}'
+      state: present
+
+  - name: 'enable and start QEMU Guest Agent'
+    service:
+      name: '{{ vm_tools_qemu_service }}'
+      enabled: true
+      state: "{{ ansible_facts['is_chroot'] | ternary(omit, 'started') }}"
+
   when: "ansible_facts['virtualization_type'] == 'kvm'"
 
-- name: 'enable and start QEMU Guest Agent'
-  service:
-    name: '{{ vm_tools_qemu_service }}'
-    enabled: yes
-    state: "{{ ansible_facts['is_chroot'] | ternary(omit, 'started') }}"
-  when: "ansible_facts['virtualization_type'] == 'kvm'"
+- name: 'set up VMware client tools'
+  block:
 
-- name: 'install VMware client tools'
-  package:
-    name: "{{ vm_tools_vmware_package }}"
-    state: present
-  when: "ansible_facts['virtualization_type'] == 'vmware'"
+  - name: 'install VMware client tools'
+    package:
+      name: "{{ vm_tools_vmware_package }}"
+      state: present
 
-- name: 'enable and start VMware client tools'
-  service:
-    name: "{{ vm_tools_vmware_service }}"
-    enabled: true
-    state: "{{ ansible_facts['is_chroot'] | ternary(omit, 'started') }}"
+  - name: 'enable and start VMware client tools'
+    service:
+      name: "{{ vm_tools_vmware_service }}"
+      enabled: true
+      state: "{{ ansible_facts['is_chroot'] | ternary(omit, 'started') }}"
+
   when: "ansible_facts['virtualization_type'] == 'vmware'"
