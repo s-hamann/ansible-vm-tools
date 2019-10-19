@@ -15,6 +15,18 @@
       name: '{{ vm_tools_qemu_package }}'
       state: present
 
+  - name: 'configure QEMU Guest Agent for mdev'
+    lineinfile:
+      path: '/etc/conf.d/qemu-guest-agent'
+      line: 'GA_PATH="/dev/vport2p1"'
+      regexp: 'GA_PATH='
+      create: true
+      owner: root
+      group: root
+      mode: 0644
+      state: present
+    when: "ansible_facts['os_family'] == 'Alpine'"
+
   - name: 'enable and start QEMU Guest Agent'
     service:
       name: '{{ vm_tools_qemu_service }}'
