@@ -1,0 +1,4 @@
+vm_tools_vmware_package:
+  - open-vm-tools
+  - open-vm-tools-openrc
+vm_tools_vmware_service: open-vm-tools
